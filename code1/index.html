@@ -36,7 +36,6 @@
       float rr = (x * x + y * y) / pow(.5, 2.) ;         // Compute radius squared.
 
       vec3 color = vec3(sin(uTime/rr + 5.*uCursor.y), cos(rr/vPosition.y - 0.1 + uCursor.y), atan(rr/uTime) + uCursor.x );
-      // vec3 color = vec3(sin(uTime/rr), cos(rr/vPosition.y - 0.1), 0 );
 
 
      //  if (rr < 1.) {                                    // If pixel is on sphere:
