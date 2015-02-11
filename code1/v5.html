@@ -40,7 +40,8 @@
       float angle = atan(y/x);
       float newX = sin(x * pi/2. + uTime);
       float newY = cos(y * pi/2. + uTime);
-      if (sqrt(newX*newX + newY*newY) < atan(uTime*(uCursor.x/2.+.5))) {
+      // if (sqrt(newX*newX + newY*newY) < atan((sin(uTime)+1.)/2.*20.*(uCursor.x/2.+.5))) {
+      if (sqrt(newX*newX + newY*newY) < atan((sin(uTime)+1.)/2.*2.*pi)) {
         color = vec3(1., 1., 0.);
       }
       gl_FragColor = vec4(color, 1.);
