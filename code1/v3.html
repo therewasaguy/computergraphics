@@ -38,12 +38,12 @@
         float y = vPosition.y;                            //   the square's geometry.
         float rr = (x * x + y * y) / pow(.5, 2.) ;         // Compute radius squared.
         vec3 color = vec3(0.0, 0.0, 0.0);
-        // float amp = sqrt(pow(x, 2.) + pow(y, 2.));
+        float amp = sqrt(pow(x, 2.) + pow(y, 2.));
         float angle = atan(y/x);
-        float xt = sin(angle*uTime);
+        float xt = sin(angle*uTime*5.*((uCursor.y - 1.)*-2.));
 
         if (vPosition.x > xt) {
-          color = vec3(0., 1., 0.);
+          color = vec3(abs(atan(vPosition.x)), abs(cos(amp)), abs(cos(uTime)) / 3.);
         }
 
         gl_FragColor = vec4(color, 1.);
