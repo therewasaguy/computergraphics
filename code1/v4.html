@@ -1,0 +1,63 @@
+<!doctype html>
+
+  <script src=lib1.js></script>
+
+  <canvas id='canvas1' width='640' height='640'></canvas>
+
+  <script id='my_vertex_shader' type='x-shader/x-vertex'>
+     attribute vec3 aPosition;
+     varying   vec3 vPosition;
+     void main() {
+        gl_Position = vec4(aPosition, 1.0);
+        vPosition = aPosition;
+     }
+  </script>
+
+  <!!==========================================================================
+
+     Below is the fragment shader from class (with some slight improvements).
+
+     Your assignment is to write your own interesting fragment shader program.
+     Try to have fun with it -- use "uTime" to create animated patterns, and
+     "uCursor" to make it responsive to a user's mouse gestures.
+
+     Try to make something as completely different from my "easter egg" example
+     as possible :-)
+
+  ============================================================================>
+
+  <script id='my_fragment_shader' type='x-shader/x-fragment'>
+     precision mediump float;
+     uniform float uTime;
+     uniform vec3  uCursor;
+     varying vec3  vPosition;
+
+     void main() {
+
+        float x = vPosition.x;                            // Use only x and y coords of
+        float y = vPosition.y;                            //   the square's geometry.
+        float rr = (x * x + y * y) / pow(.5, 2.) ;         // Compute radius squared.
+        vec3 color = vec3(0.0, 0.0, 0.0);
+        float amp = sqrt(pow(x, 2.) + pow(y, 2.));
+        float angle = atan(sin(y)/cos(x));
+        float xt = abs(sin(amp*angle * uCursor.x + uTime));
+
+        if (xt < 0.2) {
+          color = vec3(xt, 1.0, 1.0);
+        } else if (xt > (cos(uTime + angle + uCursor.y) + 1.) ) {
+          color = vec3(1., xt, 1.0);
+          // color = vec3(abs(atan(vPosition.x)), abs(cos(amp)), abs(cos(uTime)) / 3.);
+        } else if (0.4 < xt && xt < 0.6) {
+          color = vec3(1., 1., (cos(xt) + 1.)/ 2.);
+        }
+
+        gl_FragColor = vec4(color, 1.);
+     }
+  </script>
+
+  <script>
+  start_gl('canvas1', document.getElementById('my_vertex_shader'  ).innerHTML,
+                      document.getElementById('my_fragment_shader').innerHTML);
+  </script>
+
+</html>
