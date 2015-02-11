@@ -18,6 +18,8 @@ function start_gl(canvas_id, vertexShader, fragmentShader) {
    setTimeout(function() {
       try {
          var canvas = document.getElementById(canvas_id);
+         // canvas.width = document.body.clientWidth;
+         // canvas.height = document.body.clientHeight;
          var gl = canvas.getContext("experimental-webgl");
       } catch (e) { throw "Sorry, your browser does not support WebGL."; }
 
