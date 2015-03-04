@@ -65,7 +65,7 @@
       color = ambient + Lrgb * diffuse * max(0.0, dot(normal, Ldir));
 
       // phong model
-      vec3 R = 2.*normal*(normal*Ldir) - Ldir;
+      vec3 R = 2.*dot(normal, Ldir)*normal - Ldir;
       vec3 E = -W;
       float power = 7.0;
       float Srgb = pow(max(0., dot(E, R)), power);
@@ -79,7 +79,7 @@
       // vec2 c = vec2(2., 0.);
       Lrgb = vec3(0.9,0.9,0.0);
       Ldir = normalize(vec3(c.x, c.y, 3. - 2. * dot(c, c)));
-
+      // Ldir = vec3(1.0, 1.0, 0.);
       // YOU NEED TO COMPUTE V AND W TO CREATE THE RAY FOR THIS PIXEL,
       // USING vPosition.x AND vPosition.y.
       // 
@@ -116,30 +116,32 @@
       // YOU NEED TO SET x,y,z AND r FOR sphere.
       V.x = cos(uTime)*4.;
       V.y = cos(uTime);
-      V.z = cos(uTime)*2.;
+      V.z = cos(uTime + 2.)*2.;
 
       W.x = vPosition.x/2.;
       W.y = vPosition.y/2.;
       W.z = 0.0;
       W = normalize(vec3(vPosition.x, vPosition.y, -10.));
 
-      sphere2.x = 0.5;
+      sphere2.x = -0.5;
       sphere2.y = 0.5;
-      sphere2.z = -10.0;
-      sphere2.r = 3.2;
+      sphere2.z = -100.0;
+      sphere2.r = 5.2;
 
       // YOU NEED TO SET r,g,b FOR material.
       material.r = 0.5;
       material.g = 0.5;
       material.b = 0.5;
 
-      vec3 color2 = vec3(1.0, 0.0, 0.2);
+
       float t2 = raySphere(V, W, sphere2);
       if (t2 < 1000.)
-         color2 = shadeSphere(V + t2 * W, sphere2, material, W);
+         color = shadeSphere(V + t2 * W, sphere2, material, W);
+      // else if (t < 101.) {
+      //    color = shadeSphere(V + t * W, sphere, material, W);
+      // }
 
-
-      gl_FragColor = vec4(sqrt(color), 1.); // Do Gamma correction.
+      gl_FragColor = vec4(sqrt(color), 1.);// + vec4(sqrt(color2), 1.); // Do Gamma correction.
    }
 </script>
 
