@@ -71,39 +71,36 @@
 
       // YOU NEED TO COMPUTE t, BY SETTING UP AND THEN SOLVING A QUADRATIC EQUATION.
 
-      float t = 100.;
       float a = 1.; //(W * W)
       float b = 2. * dot(W, (V - S.xyz));//*(W.x+W.y+W.z)* ( (V.x-S.x) + (V.y-S.y) + (V.z-S.z) );
       float c = dot((V-S.xyz), (V-S.xyz)) - S.r*S.r;
-      // float c = dot(V, V) -S.r * S.r; //(V.x - S.x)*(V.x - S.x) + (V.y - S.y)*(V.y - S.y) + (V.z - S.
 
       float d = b * b - 4. * c;
       return d < 0. ? 1. / 0. : (-b - sqrt(d)) / 2.;
-      //ambient + Lrgb*(diffuse*(max(0., dot(normal, -Ldir))));
-      // t = min( ( (-b - sqrt(b*b - 4.*a*c) ) / 2.), (-b + sqrt(b*b - 4.*a*c) ) / 2.);
-      return t;
    }
 
    // Diffusely shade a sphere.
    //    point is the x,y,z position of the surface point.
    //    sphere is the x,y,z,r definition of the sphere.
    //    material is the r,g,b color of the sphere.
+   float rrr = 0.01;
 
    vec3 shadeSphere(vec3 point, vec4 sphere, vec3 material, vec3 W) {
-      vec3 color = material * noise(vec3(uTime, uTime, uTime));
+      vec3 color = vec3( material.r, material.b, noise(vec3(uTime * 100., uTime * 100., uTime)) );
       // YOU NEED TO COMPUTE COLOR FOR A DIFFUSELY SHADED SPHERE.
 
       // FOR THE AMBIENT COMPONENT OF THE DIFFUSE SHADING, YOU CAN
       // USE A SIMPLE APPROXIMATION SUCH AS: ambient = material / 5.;
-      vec3 ambient = material/100.;
-      vec3 diffuse = vec3(0.01, 0.05, 0.01);
+      vec3 ambient = noise(vec3(rrr, rrr*100., -rrr)) * material; ///100.;
+      vec3 diffuse = vec3(noise(vec3(rrr, rrr*100., -rrr)), 0.05, 0.01);
+      rrr = rrr + 0.001;
       vec3 normal = normalize( (point - sphere.xyz)/sphere.r );
       color = ambient + Lrgb * diffuse * max(0.0, dot(normal, Ldir));
 
       // phong model
       vec3 R = 2.*dot(normal, Ldir)*normal - Ldir;
       vec3 E = -W;
-      float power = 7.0;
+      float power = 2.0;
       float Srgb = pow(max(0., dot(E, R)), power);
 
       // float n = noise(vec3(uTime*color.r, uTime*color.g, uTime*color.b));
@@ -117,7 +114,7 @@
    void main(void) {
       vec2 c = uCursor.xy;
       // vec2 c = vec2(2., 0.);
-      Lrgb = vec3(0.9,0.9,0.0);
+      Lrgb = vec3(0.2,0.9,0.0);
       Ldir = normalize(vec3(c.x, c.y, 3. - 2. * dot(c, c)));
       // Ldir = vec3(1.0, 1.0, 0.);
       // YOU NEED TO COMPUTE V AND W TO CREATE THE RAY FOR THIS PIXEL,
@@ -126,7 +123,7 @@
 
       // make a sphere
       vec3 V, W;
-      V.x = sin(uTime)*4.;
+      V.x = 0.;
       V.y = 0.0;
       V.z = sin(uTime)*2.;
 
@@ -136,49 +133,33 @@
       W = normalize(vec3(vPosition.x, vPosition.y, -10.));
 
       // YOU NEED TO SET x,y,z AND r FOR sphere.
-      sphere.x = 0.0;
-      sphere.y = 0.0;
+      sphere.x = sin(uTime)*4.;
+      sphere.y = sin(uTime)*4.;
       sphere.z = -50.0;
-      sphere.r = 5.2;
+      sphere.r = 1.2;
+
+      sphere2.x = 0.;
+      sphere2.y = 0.;
+      sphere2.z = -100.0;
+      sphere2.r = 4.8;
+
 
       // YOU NEED TO SET r,g,b FOR material.
-      material.r = 0.5;
-      material.g = 0.5;
-      material.b = 0.5;
+      material.r = 0.0;
+      material.g = 0.0;
+      material.b = 0.0;
 
       vec3 color = vec3(0.0, 0.0, 0.2);
       float t = raySphere(V, W, sphere);
-      if (t < 1010.) {
-         color = shadeSphere(V + t * W, sphere, material, W);
-         float n = noise(vec3(uTime*color.r, uTime*color.g, uTime*color.b));
-         color = color*n;
-      }
-
-      //////////// make another sphere
-
-      // YOU NEED TO SET x,y,z AND r FOR sphere.
-      V.x = cos(uTime)*4.;
-      V.y = cos(uTime);
-      V.z = cos(uTime + 2.)*2.;
-
-      W.x = vPosition.x/2.;
-      W.y = vPosition.y/2.;
-      W.z = 0.0;
-      W = normalize(vec3(vPosition.x, vPosition.y, -10.));
-
-      sphere2.x = -0.5;
-      sphere2.y = 0.5;
-      sphere2.z = -100.0;
-      sphere2.r = 5.2;
-
-      // YOU NEED TO SET r,g,b FOR material.
-      material.r = 0.5;
-      material.g = 0.5;
-      material.b = 0.5;
-
 
       float t2 = raySphere(V, W, sphere2);
-      if (t2 < 1000.) {
+
+      if (t < 100.) {
+         color = shadeSphere(V + t * W, sphere, material, W);
+      } else if (t2 < 100.) {
+         material.r = noise(vec3(0.5, uTime * 100., uTime * 100.));
+         material.g = 0.5;
+         material.b = 0.5;
          color = shadeSphere(V + t2 * W, sphere2, material, W);
       }
 
