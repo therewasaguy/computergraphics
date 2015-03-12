@@ -3,9 +3,120 @@
   <head>
     <script src="matrix.js"></script>
     <script src="drawLib.js"></script>
+
+    <script>
+    var Cube = function() {
+      this.points = [ 
+        [-.1,-.1,-.1],
+        [ .1,-.1,-.1],
+        [-.1, .1,-.1],
+        [ .1, .1,-.1],
+        [-.1,-.1, .1],
+        [ .1,-.1, .1],
+        [-.1, .1, .1],
+        [ .1, .1, .1],
+        ];
+        // this.edges = [ 0,3,6,1,4, 7, 2, 5, 0];
+        // this.edges =  [0 , 2 , 3 ,
+        // 0 , 3 , 1 ,
+
+        // 0 , 4 , 5 ,
+        // 0 , 5 , 1 ,
+
+        // 0 , 4 , 6 ,
+        // 0 , 6 , 2 ,
+
+        // 2 , 6 , 7 ,
+        // 2 , 7 , 3 ,
+
+        // 1 , 5 , 7 ,
+        // 1 , 7 , 3 ,
+
+        // 4 , 6 , 7 ,
+        // 4 , 7 , 5]
+        // this.edges = [0,1,3,2,0];
+        this.edges = [ 0,1,2,
+        0,2,3,
+        // Back face
+        4,6,5,
+        4,7,6,
+        // Left face
+        4,5,1,
+        4,1,0,
+        // Right face
+        3,2,6,
+        3,6,7,
+        // Top face
+        1,5,6,
+        1,6,2,
+        // Bottom face
+        4,0,3,
+        4,3,7,
+        // Front edges
+        0,1,2,3,0,
+        // Back edges
+        4,5,6,7,4,
+        // Left edges
+        4,5,1,0,4,
+        // Right edges
+        3,2,6,7,3,
+        // Top edges
+        1,5,6,2,1,
+        // Bottom edges
+        4,0,3,7,4]
+      }
+      var cubes = [];
+      var m = new Matrix();
+
+    window.onload=function() {
+      cube = new Cube();
+
+      var canvas = initCanvas('canvas1');
+
+      canvas.update = function(g) {
+        g.fillStyle = 'rgb(255,255,128';
+        g.strokeStyle = 'blue';
+
+        g.beginPath();
+
+        for (var i = 0; i < cube.edges.length; i++ ) {
+          // for (var j = 0; j < 2; j++) {
+            // var start = cube.edges[i][j];
+            var index = cube.edges[i];
+            var x = cube.points[index][0];
+            var y = cube.points[index][1];
+            var z = cube.points[index][2];
+
+            // convert points with matrix math
+            // m.scale(Math.sin(time), 1, 1);
+            // m.scale(.2, .2, .20);
+
+            // m.rotateY(time);
+            m.rotateZ(time);
+
+            var mxyz = m.transformPoint(x, y, z);
+            var mz = mxyz[2] || 0;
+            var mx = mxyz[0]/ mz;
+            var my = mxyz[1]/ mz;
+
+            px = (canvas.width) + mx * (canvas.width);
+            py = (canvas.height) - my * (canvas.width);
+
+            if (i === 0) {
+              g.moveTo(px, py);
+            } else {
+              g.lineTo(px, py);
+            }
+          }
+        g.stroke();
+      }
+    }
+
+  </script>
   </head>
 
   <body>
+    <canvas id="canvas1" width=600 height=600></canvas>
 
   </body>
 
